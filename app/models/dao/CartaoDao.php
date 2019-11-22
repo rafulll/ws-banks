@@ -42,7 +42,6 @@ final class CartaoDao extends Dao
             $req->bindValue(":nome_cliente", $str);
             $req->bindValue(":cod_seguranca", $securyCode);
             $req->execute();
-            //var_dump($clientNameInCard);
             if ($req->rowCount() != 0) {
                 $result = $req->fetch();
             }
@@ -57,9 +56,7 @@ final class CartaoDao extends Dao
         try {
             $sql1 = "SELECT * FROM tb_cartao WHERE numero = :numero AND nome_cliente = :nome_cliente AND cod_seguranca = :cod_seguranca";
             $req1 = $this->pdo->prepare($sql1);
-            //var_dump($data['nome_cliente']);
             $str = str_replace("_", " ", $data['nome_cliente']);
-            //var_dump($str);
             $req1->bindValue(":numero", $data['numero_cartao']);
             $req1->bindValue(":nome_cliente", $str);
             $req1->bindValue(":cod_seguranca", $data['cod_seguranca']);
@@ -71,7 +68,6 @@ final class CartaoDao extends Dao
                 $req = $this->pdo->prepare($sql2);
                 $req->bindValue(1, $result['id']);
                 $req->bindValue(2, $data['valor_em_centavos']);
-                //echo $data['parcelas'];
                 $req->execute();
                 $last_id = $this->pdo->lastInsertId();
                 $parcelas = 1;
@@ -84,19 +80,16 @@ final class CartaoDao extends Dao
                     $date->add(new \DateInterval("P" . $parcelas . "M"));
                     $date2->add(new \DateInterval("P" . ($parcelas + 1) . "M"));
 
-                    //echo $date2->format('Y-m-d');
 
 
 
 
-                    //cho $date->format('Y-m-d');
 
                     $dt_final = $date2->format('Y-m-d');
                     //SELECIONAR FATURAS ABERTAS DO CLIENTE NA DATA ENTRE AS PARCELAS
                     $sql_select_fat = "SELECT tf.id as fatura_id, tp.id as parcela_id, tp.valor_em_centavos as valor_parcela FROM tb_cartao as tc JOIN tb_fatura tf ON tf.tb_cartao_id = tc.id JOIN tb_parcela tp ON tp.tb_fatura_id = tf.id JOIN tb_compra tbc ON tp.tb_compra_id = tbc.id WHERE tc.numero like ? AND tf.data_inicial = ?";
                     $stm_select_fat = $this->pdo->prepare($sql_select_fat);
                     $stm_select_fat->bindValue(1, $data['numero_cartao']);
-                    //var_dump($date->format('Y-m-d'));
                     $stm_select_fat->bindValue(2, $date->format('Y-m-d'));
                     $stm_select_fat->execute();
 
@@ -105,10 +98,8 @@ final class CartaoDao extends Dao
 
 
                         $fat_exists = $stm_select_fat->fetch();
-                        //var_dump($fat_exists);
                         
 
-                            //echo $value['valor_parcela'];
                             $sql_updt_parc = "UPDATE tb_parcela SET valor_em_centavos = ? WHERE tb_fatura_id = ?";
                             $stm_upd_parc = $this->pdo->prepare($sql_updt_parc);
                             $stm_upd_parc->bindValue(1, (($data['valor_em_centavos'] / $data['parcelas']) + $fat_exists['valor_parcela']));
@@ -154,7 +145,6 @@ final class CartaoDao extends Dao
 
 
 
-                    //$req2->execute();
 
 
                 }
