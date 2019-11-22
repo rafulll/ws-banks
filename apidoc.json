@@ -1,0 +1,7 @@
+{
+    "name": "WS Bank",
+    "version": "1.0.0",
+    "description": "A API dos bancos receberá a comunicação da API das bandeiras de cartão de crédito.",
+    "title": "WS Bank - FAPCE",
+    "url" : "http://localhost/ws-banks/v1"
+}
