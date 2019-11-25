@@ -160,7 +160,7 @@ final class CartaoDao extends Dao
         try {
             $sql = "SELECT nome_cliente, (limite_em_centavos - sum(valor_parcela_em_centavos)) as limite_disponivel_em_centavos 
             FROM vw_faturas_abertas_do_banco 
-            WHERE numero = :numero AND valor_compra_em_centavos IS NOT NULL AND nome_cliente = :nome_cliente 
+            WHERE numero = :numero AND nome_cliente = :nome_cliente 
             AND cod_seguranca = :cod_seguranca 
             GROUP BY nome_cliente;";
 
