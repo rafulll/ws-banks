@@ -35,6 +35,8 @@ final class CartaoDao extends Dao
     {
         $result = null;
         $str = str_replace("_", " ", $clientNameInCard);
+        //var_dump($str);
+    
         try {
             $sql = "SELECT * FROM tb_cartao WHERE numero = :numero AND nome_cliente = :nome_cliente AND cod_seguranca = :cod_seguranca";
             $req = $this->pdo->prepare($sql);
@@ -71,7 +73,7 @@ final class CartaoDao extends Dao
                 $req->execute();
                 $last_id = $this->pdo->lastInsertId();
                 $parcelas = 1;
-                $m = 0;
+               
 
                 while ($parcelas <= $data['parcelas']) {
 
@@ -103,7 +105,7 @@ final class CartaoDao extends Dao
                             $sql_updt_parc = "UPDATE tb_parcela SET valor_em_centavos = ? WHERE tb_fatura_id = ?";
                             $stm_upd_parc = $this->pdo->prepare($sql_updt_parc);
                             $stm_upd_parc->bindValue(1, (($data['valor_em_centavos'] / $data['parcelas']) + $fat_exists['valor_parcela']));
-                            echo " Atualizando fatura [". $fat_exists['fatura_id']."] com valor [".(($data['valor_em_centavos'] / $data['parcelas']) + $fat_exists['valor_parcela']);
+                            //echo " Atualizando fatura [". $fat_exists['fatura_id']."] com valor [".(($data['valor_em_centavos'] / $data['parcelas']) + $fat_exists['valor_parcela']);
                             $stm_upd_parc->bindValue(2, $fat_exists['fatura_id']);
                             $stm_upd_parc->execute();
                         
@@ -172,6 +174,7 @@ final class CartaoDao extends Dao
 
             if ($req->rowCount() == 1) {
                 $result = $req->fetchAll(\PDO::FETCH_ASSOC);
+                //var_dump($result);
             }
         } catch (Exception $e) {
             echo $e->getMessage();

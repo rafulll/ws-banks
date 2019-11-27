@@ -38,7 +38,7 @@ final class BankController extends CoreController
     }
     private function verify($data)
     {
-        var_dump($data);
+        //var_dump($data);
         if (!$data) {
             return false;
         } else {
@@ -49,37 +49,47 @@ final class BankController extends CoreController
 
 
             $client_result = $verify_client->readAvailableLimIt($data['numero_cartao'], $data['nome_cliente'], $data['cod_seguranca']);
+            //var_dump($client_result);
+            if($client_result[0]['limite_disponivel_em_centavos'] == null){
+                $valor_disp = $data['valor_em_centavos'];
+            }else{
+                $valor_disp = intval($client_result[0]['limite_disponivel_em_centavos']);
 
-            $valor_disp = intval($client_result[0]['limite_disponivel_em_centavos']);
-
+            }
+            
+           
             $parcela = $data['valor_em_centavos'] / $data['parcelas'];
-            var_dump($parcela);
+           // var_dump($parcela);
             if ($parcela <= $valor_disp) {
-
+                //var_dump($data['nome_cliente']);
                 $cliente_buy = $verify_client->readByDetails($data['numero_cartao'],   $data['nome_cliente'], $data['cod_seguranca']);
+                if(!$cliente_buy){
+                    return false;
+                }
                 $verify_client->buy($data);
                 return true;
             } else {
 
                 return false;
             }
-            return true;
+            
         }
         return true;
     }
     public static function payC(Request $rq, Response $rs, array $args)
     {
         $dados = $rq->getParsedBody();
-
-        if (self::verify($dados) != true) {
-            array_push($dados, [
+        $verif = self::verify($dados);
+        //var_dump($verif);
+        if ($verif != true) {
+            $dados = [
                 "resultado" => "Falha",
-                "detalhes" => "Limite indisponivel ou dados incorretos"
+                "detalhes" => "Dados incorretos OU LIMITE INDISPONIVEL. Verifique os dados ou entre em contato com a operadora do cartão."
 
-            ]);
+            ];
             return $rs->withStatus(401)->withJson($dados);
         } else {
-            array_push($dados, ["resultado" => "Sucesso", "detalhes" => "Compra efetuada com sucesso."]);
+            $dados = ["resultado" => "Sucesso", "detalhes" => "Compra efetuada com sucesso."];
         }
         return $rs->withStatus(200)->withJson($dados);
 
